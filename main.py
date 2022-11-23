@@ -3,14 +3,7 @@ import json
 import os
 import requests as requests
 from datetime import date
-from dotenv import load_dotenv
-
-load_dotenv()
-
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
+import configparser
 
 def sendMessage(apiToken, chatId, msg):
     apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
@@ -76,12 +69,15 @@ def count_files(dir_path):
 
 
 if __name__ == '__main__':
-    apiToken = os.getenv('API_TOKEN')
-    chatID = os.getenv('CHAT_ID')
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    apiToken = config['BASE']['API_TOKEN']
+    chatID = config['BASE']['CHAT_ID']
 
     today = date.today()
     str_today = today.strftime("%Y-%m-%d")
-    today_img_dir_path = os.getenv('MEDIA_PATH') + '/' + str_today
+    today_img_dir_path = config['BASE']['MEDIA_PATH'] + '/' + str_today
 
     msg = '/!\ Motion detected END /!\\ \n{} images are currently saved'.format(count_files(today_img_dir_path))
 
