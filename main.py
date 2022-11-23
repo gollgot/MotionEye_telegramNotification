@@ -3,7 +3,7 @@ import json
 import os
 import requests as requests
 from datetime import date
-import configparser
+import config
 
 def sendMessage(apiToken, chatId, msg):
     apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
@@ -69,15 +69,13 @@ def count_files(dir_path):
 
 
 if __name__ == '__main__':
-    config = configparser.ConfigParser()
-    config.read('config.ini')
 
-    apiToken = config['BASE']['API_TOKEN']
-    chatID = config['BASE']['CHAT_ID']
+    apiToken = config.var_API_TOKEN
+    chatID = config.var_CHAT_ID
 
     today = date.today()
     str_today = today.strftime("%Y-%m-%d")
-    today_img_dir_path = config['BASE']['MEDIA_PATH'] + '/' + str_today
+    today_img_dir_path = config.var_MEDIA_PATH + '/' + str_today
 
     msg = '/!\ Motion detected END /!\\ \n{} images are currently saved'.format(count_files(today_img_dir_path))
 
