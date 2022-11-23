@@ -71,9 +71,6 @@ def count_files(dir_path):
 
 
 if __name__ == '__main__':
-
-    print(sys.argv[1])
-
     apiToken = config.var_API_TOKEN
     chatID = config.var_CHAT_ID
 
@@ -81,8 +78,8 @@ if __name__ == '__main__':
     str_today = today.strftime("%Y-%m-%d")
     today_img_dir_path = config.var_MEDIA_PATH + '/' + str_today
 
-    # msg = '/!\ Motion detected END /!\\ \n{} images are currently saved'.format(count_files(today_img_dir_path))
+    msg = '/!\ Motion detected END /!\\ \n{} images are currently saved'.format(count_files(today_img_dir_path))
 
-    sendMessage(apiToken, chatID, sys.argv[1])
+    sendMessage(apiToken, chatID, msg)
     # sendPhoto(apiToken, chatID)
     # sendMedia(apiToken, chatID)
