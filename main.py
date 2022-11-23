@@ -2,9 +2,9 @@
 import json
 import os
 import sys
-
 import requests as requests
 from datetime import date
+import configparser
 import config
 
 def sendMessage(apiToken, chatId, msg):
@@ -71,7 +71,10 @@ def count_files(dir_path):
 
 
 if __name__ == '__main__':
-    apiToken = config.var_API_TOKEN
+    configParser = configparser.ConfigParser()
+    configParser.read('config.ini')
+
+    apiToken = configParser['BASE']['API_TOKEN']
     chatID = config.var_CHAT_ID
 
     today = date.today()
