@@ -5,10 +5,11 @@ import requests as requests
 from datetime import date
 import config
 
-def sendMessage(apiToken, chatId, msg):
-    apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
+
+def send_message(api_token, chat_id, msg):
+    apiURL = f'https://api.telegram.org/bot{api_token}/sendMessage'
     data = {
-        'chat_id': chatID,
+        'chat_id': chat_id,
         'text': msg
     }
 
@@ -19,8 +20,8 @@ def sendMessage(apiToken, chatId, msg):
         print(e)
 
 
-def sendPhoto(apiToken, chatId):
-    apiURL = f'https://api.telegram.org/bot{apiToken}/sendPhoto?chat_id={chatId}'
+def send_photo(api_token, chat_id):
+    apiURL = f'https://api.telegram.org/bot{api_token}/sendPhoto?chat_id={chat_id}'
     image1Path = './2022-11-23/photo1.jpg'
     files = {
         'photo': open(image1Path, 'rb')
@@ -33,22 +34,18 @@ def sendPhoto(apiToken, chatId):
         print(e)
 
 
-def sendMedia(apiToken, chatId):
-    apiURL = f'https://api.telegram.org/bot{apiToken}/sendMediaGroup'
-    image1Path = './2022-11-23/photo1.jpg'
-    image2Path = './2022-11-23/photo2.jpg'
+def send_media(api_token, chat_id, img_dir_path, img_names):
+    apiURL = f'https://api.telegram.org/bot{api_token}/sendMediaGroup'
+
+    media_arr = []
+    files = {}
+    for img_name in img_names:
+        media_arr.append({"type": "photo", "media": "attach://" + img_name})
+        files[img_name] = open(img_dir_path + "/" + img_name, 'rb')
 
     data = {
-        "chat_id": chatId,
-        "media": json.dumps([
-            {"type": "photo", "media": "attach://photo1.jpg"},
-            {"type": "photo", "media": "attach://photo2.jpg"}
-        ])
-    }
-
-    files = {
-        "photo1.jpg": open(image1Path, 'rb'),
-        "photo2.jpg": open(image2Path, 'rb')
+        "chat_id": chat_id,
+        "media": json.dumps(media_arr)
     }
 
     try:
@@ -58,26 +55,39 @@ def sendMedia(apiToken, chatId):
         print(e)
 
 
-def count_files(dir_path):
-    count = 0
-    # Iterate directory
-    for path in os.listdir(dir_path):
-        # check if current path is a file
-        if os.path.isfile(os.path.join(dir_path, path)):
-            count += 1
-    return count
-
-
 if __name__ == '__main__':
     apiToken = config.var_API_TOKEN
     chatID = config.var_CHAT_ID
+    bookmarkFileName = 'bookmark.txt'
 
     today = date.today()
     str_today = today.strftime("%Y-%m-%d")
     today_img_dir_path = config.var_MEDIA_PATH + '/' + str_today
+    bookmark_path = today_img_dir_path + '/' + bookmarkFileName
 
-    msg = '/!\ Motion detected END /!\\ \n{} images are currently saved'.format(count_files(today_img_dir_path))
+    # Found start index and create bookmark if not exists
+    startIndex = 0
+    if not os.path.exists(bookmark_path):
+        open(bookmark_path, "x")
+    else:
+        f = open(bookmark_path, "r")
+        startIndex = int(f.read())
 
-    sendMessage(apiToken, chatID, msg)
-    # sendPhoto(apiToken, chatID)
-    # sendMedia(apiToken, chatID)
+    # Fetch all new images and send them
+    arr = os.listdir(today_img_dir_path)
+    arr.remove(bookmarkFileName)
+    arr.sort()
+
+    print(arr[startIndex:])
+    send_media(apiToken, chatID, today_img_dir_path, arr[startIndex:])
+
+    # Write new index
+    f = open(bookmark_path, "w")
+    f.write(str(len(arr)))
+    f.close()
+
+    # msg = '/!\ Motion detected END /!\\ \n{} images are currently saved'.format(count_files(today_img_dir_path))
+
+    # send_message(apiToken, chatID, msg)
+    # send_photo(apiToken, chatID)
+    # send_media(apiToken, chatID)
