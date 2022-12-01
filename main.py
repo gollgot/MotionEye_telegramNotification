@@ -84,7 +84,7 @@ if __name__ == '__main__':
     arr = os.listdir(today_img_dir_path)
     arr.remove(bookmarkFileName)
     arr.sort()
-    send_media(apiToken, chatID, today_img_dir_path, arr[startIndex:], 10)
+    send_media(apiToken, chatID, today_img_dir_path, arr[startIndex:], 6)
 
     # Write new index
     f = open(bookmark_path, "w")
