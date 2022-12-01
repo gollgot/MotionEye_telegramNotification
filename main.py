@@ -1,5 +1,6 @@
 # This is a sample Python script.
 import json
+import math
 import os
 import requests as requests
 from datetime import date
@@ -34,14 +35,17 @@ def send_photo(api_token, chat_id):
         print(e)
 
 
-def send_media(api_token, chat_id, img_dir_path, img_names):
+def send_media(api_token, chat_id, img_dir_path, img_names, nb_img_send_max):
     apiURL = f'https://api.telegram.org/bot{api_token}/sendMediaGroup'
+
+    # slicing equally all images to send maximum nb_img_send_max
+    img_names = img_names[::math.ceil(len(img_names) / nb_img_send_max)]
 
     media_arr = []
     files = {}
-    #for img_name in img_names:
-    media_arr.append({"type": "photo", "media": "attach://" + img_names[0]})
-    files[img_names[0]] = open(img_dir_path + "/" + img_names[0], 'rb')
+    for img_name in img_names:
+        media_arr.append({"type": "photo", "media": "attach://" + img_name})
+        files[img_name] = open(img_dir_path + "/" + img_name, 'rb')
 
     data = {
         "chat_id": chat_id,
@@ -77,9 +81,7 @@ if __name__ == '__main__':
     arr = os.listdir(today_img_dir_path)
     arr.remove(bookmarkFileName)
     arr.sort()
-
-    print(arr[startIndex:])
-    send_media(apiToken, chatID, today_img_dir_path, arr[startIndex:])
+    send_media(apiToken, chatID, today_img_dir_path, arr[startIndex:], 10)
 
     # Write new index
     f = open(bookmark_path, "w")
