@@ -39,9 +39,9 @@ def send_media(api_token, chat_id, img_dir_path, img_names):
 
     media_arr = []
     files = {}
-    for img_name in img_names:
-        media_arr.append({"type": "photo", "media": "attach://" + img_name})
-        files[img_name] = open(img_dir_path + "/" + img_name, 'rb')
+    #for img_name in img_names:
+    media_arr.append({"type": "photo", "media": "attach://" + img_names[0]})
+    files[img_names[0]] = open(img_dir_path + "/" + img_names[0], 'rb')
 
     data = {
         "chat_id": chat_id,
