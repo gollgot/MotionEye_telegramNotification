@@ -39,11 +39,14 @@ def send_media(api_token, chat_id, img_dir_path, img_names, nb_img_send_max):
     apiURL = f'https://api.telegram.org/bot{api_token}/sendMediaGroup'
 
     # slicing equally all images to send maximum nb_img_send_max
-    img_names = img_names[::math.ceil(len(img_names) / nb_img_send_max)]
+    img_names_to_send = img_names[::math.ceil(len(img_names) / nb_img_send_max)]
+
+    msg = '⚠ Intrusion detected ⚠️\n--------------------------------------\n{}/{} images sent'.format(len(img_names_to_send), len(img_names))
+    send_message(api_token, chat_id, msg)
 
     media_arr = []
     files = {}
-    for img_name in img_names:
+    for img_name in img_names_to_send:
         media_arr.append({"type": "photo", "media": "attach://" + img_name})
         files[img_name] = open(img_dir_path + "/" + img_name, 'rb')
 
@@ -87,9 +90,3 @@ if __name__ == '__main__':
     f = open(bookmark_path, "w")
     f.write(str(len(arr)))
     f.close()
-
-    # msg = '/!\ Motion detected END /!\\ \n{} images are currently saved'.format(count_files(today_img_dir_path))
-
-    # send_message(apiToken, chatID, msg)
-    # send_photo(apiToken, chatID)
-    # send_media(apiToken, chatID)
